@@ -12,7 +12,7 @@ services:
       - '81:81'
     environment:
       # These are the settings to access your db
-      DB_MYSQL_HOST: "npm_db"
+      DB_MYSQL_HOST: "db"
       DB_MYSQL_PORT: 3306
       DB_MYSQL_USER: "npm"
       DB_MYSQL_PASSWORD: "npm"
@@ -22,8 +22,8 @@ services:
       - ./data:/data
       - ./letsencrypt:/etc/letsencrypt
     depends_on:
-      - npm_db
-  npm_db:
+      - db
+  db:
     image: yobasystems/alpine-mariadb:latest
     restart: always
     environment:
