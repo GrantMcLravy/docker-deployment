@@ -12,7 +12,7 @@ services:
       - '81:81'
     environment:
       # These are the settings to access your db
-      DB_MYSQL_HOST: "db"
+      DB_MYSQL_HOST: "npm_db"
       DB_MYSQL_PORT: 3306
       DB_MYSQL_USER: "npm"
       DB_MYSQL_PASSWORD: "npm"
@@ -22,8 +22,8 @@ services:
       - ./data:/data
       - ./letsencrypt:/etc/letsencrypt
     depends_on:
-      - db
-  db:
+      - npm_db
+  npm_db:
     image: yobasystems/alpine-mariadb:latest
     restart: always
     environment:
@@ -58,3 +58,66 @@ services:
       url: https://ghost.granto.cloud/
       # contrary to the default mentioned in the linked documentation, this image defaults to NODE_ENV=production (so development mode needs to be explicitly specified if desired)
       #NODE_ENV: development
+  mm_db:
+    build: db
+    read_only: true
+    restart: unless-stopped
+    volumes:
+      - ./volumes/db/var/lib/postgresql/data:/var/lib/postgresql/data
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - POSTGRES_USER=mmuser
+      - POSTGRES_PASSWORD=P45!c5428cy9
+      - POSTGRES_DB=mattermost
+    # uncomment the following to enable backup
+    #  - AWS_ACCESS_KEY_ID=XXXX
+    #  - AWS_SECRET_ACCESS_KEY=XXXX
+    #  - WALE_S3_PREFIX=s3://BUCKET_NAME/PATH
+    #  - AWS_REGION=us-east-1
+
+  mm_app:
+    build:
+      context: app
+      # uncomment following lines for team edition or change UID/GID
+      args:
+       - edition=team
+      #   - PUID=1000
+      #   - PGID=1000
+      #   - MM_VERSION=5.31
+    restart: unless-stopped
+    volumes:
+      - ./volumes/app/mattermost/config:/mattermost/config:rw
+      - ./volumes/app/mattermost/data:/mattermost/data:rw
+      - ./volumes/app/mattermost/logs:/mattermost/logs:rw
+      - ./volumes/app/mattermost/plugins:/mattermost/plugins:rw
+      - ./volumes/app/mattermost/client-plugins:/mattermost/client/plugins:rw
+      - /etc/localtime:/etc/localtime:ro
+      # When you want to use SSO with GitLab, you have to add the cert pki chain of GitLab inside Alpine
+      # to avoid Token request failed: certificate signed by unknown authority (link: https://github.com/mattermost/mattermost-server/issues/13059)
+      # - <path_to_your_gitlab_pki>/pki_chain.pem:/etc/ssl/certs/pki_chain.pem:ro
+    environment:
+      # set same as db credentials and dbname
+      - MM_USERNAME=mmuser
+      - MM_PASSWORD=P45!c5428cy9
+      - MM_DBNAME=mattermost
+
+      # use the credentials you've set above, in the format:
+      # MM_SQLSETTINGS_DATASOURCE=postgres://${MM_USERNAME}:${MM_PASSWORD}@db:5432/${MM_DBNAME}?sslmode=disable&connect_timeout=10
+      - MM_SQLSETTINGS_DATASOURCE=postgres://mmuser:P45!c5428cy9@db:5432/mattermost?sslmode=disable&connect_timeout=10
+
+      # in case your config is not in default location
+      #- MM_CONFIG=/mattermost/config/config.json
+
+  mm_web:
+    build: web
+    ports:
+      - "9080:8080"
+      - "9443:8443"
+    read_only: true
+    restart: unless-stopped
+    volumes:
+      # This directory must have cert files if you want to enable SSL
+      - ./volumes/web/cert:/cert:ro
+      - /etc/localtime:/etc/localtime:ro
+    cap_drop:
+      - ALL
