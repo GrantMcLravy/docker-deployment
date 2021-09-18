@@ -60,7 +60,6 @@ services:
       #NODE_ENV: development
   homeassistant:
     image: ghcr.io/linuxserver/homeassistant
-    container_name: homeassistant
     network_mode: host
     environment:
       - PUID=1000
@@ -76,3 +75,25 @@ services:
     restart: always
     ports:
       - 3000:3000
+   plex:
+    image: plexinc/pms-docker
+    restart: unless-stopped
+    ports:
+      - 32400:32400/tcp
+      - 3005:3005/tcp
+      - 8324:8324/tcp
+      - 32469:32469/tcp
+      - 1900:1900/udp
+      - 32410:32410/udp
+      - 32412:32412/udp
+      - 32413:32413/udp
+      - 32414:32414/udp
+    environment:
+      - TZ=America/New_York
+      - PLEX_CLAIM=claim-KPAXJPzhp56WBcCd4Tq5
+      - ADVERTISE_IP=http://192.168.7.183:32400/
+    hostname: https://plex.granto.cloud
+    volumes:
+      - plexdb:/config
+      - transcode:/transcode
+      - media:/data
