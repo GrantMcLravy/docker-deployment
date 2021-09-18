@@ -58,3 +58,16 @@ services:
       url: https://ghost.granto.cloud/
       # contrary to the default mentioned in the linked documentation, this image defaults to NODE_ENV=production (so development mode needs to be explicitly specified if desired)
       #NODE_ENV: development
+  homeassistant:
+    image: ghcr.io/linuxserver/homeassistant
+    container_name: homeassistant
+    network_mode: bridge
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+    volumes:
+      - /config:/config
+    ports:
+      - 8123:8123 #optional
+    restart: unless-stopped
