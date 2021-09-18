@@ -32,7 +32,7 @@ services:
       MYSQL_USER: 'npm'
       MYSQL_PASSWORD: 'npm'
     volumes:
-      - ./data/mysql:/var/lib/mysql
+      - /BigThiccums/data/mysql:/var/lib/mysql
   gitlab:
     image: 'gitlab/gitlab-ce:latest'
     restart: always
