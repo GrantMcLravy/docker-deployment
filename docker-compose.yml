@@ -12,8 +12,8 @@ services:
       - '81:81'
     environment:
       # These are the settings to access your db
-      - PUID=1000
-      - PGID=1000
+      - PUID="1000"
+      - PGID="1000"
       DB_MYSQL_HOST: "db"
       DB_MYSQL_PORT: 3306
       DB_MYSQL_USER: "npm"
@@ -29,8 +29,8 @@ services:
     image: yobasystems/alpine-mariadb:latest
     restart: always
     environment:
-      - PUID=1000
-      - PGID=1000
+      - PUID="1000"
+      - PGID="1000"
       MYSQL_ROOT_PASSWORD: 'npm'
       MYSQL_DATABASE: 'npm'
       MYSQL_USER: 'npm'
