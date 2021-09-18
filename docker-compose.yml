@@ -102,7 +102,7 @@ services:
     restart: always
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
     volumes:
-      - nextcloud_db:/var/lib/mysql
+      - /BigThiccums/nextcloud_db:/var/lib/mysql
     environment:
       - MYSQL_ROOT_PASSWORD=0OUtvhiBbJ@1
       - MYSQL_PASSWORD=ZWWi8JrY57Na
