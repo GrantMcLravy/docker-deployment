@@ -71,3 +71,8 @@ services:
     ports:
       - 8123:8123 #optional
     restart: unless-stopped
+  grafana:
+    image: grafana:latest
+    restart: always
+    ports:
+      - 3000:3000
