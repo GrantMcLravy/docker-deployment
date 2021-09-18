@@ -96,7 +96,7 @@ services:
     volumes:
       - /BigThiccums/Media/PlexDB:/config
       - /BigThiccums/Media/Transcode:/transcode
-      - BigThiccums/Media/Library:/data
+      - /BigThiccums/Media/Library:/data
   nextcloud_db:
     image: mariadb
     restart: always
