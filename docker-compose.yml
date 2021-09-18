@@ -1,4 +1,4 @@
-version: "3.8"
+version: "2"
 services:
   app:
     image: 'jc21/nginx-proxy-manager:latest'
@@ -12,8 +12,6 @@ services:
       - '81:81'
     environment:
       # These are the settings to access your db
-      - PUID="1000"
-      - PGID="1000"
       DB_MYSQL_HOST: "db"
       DB_MYSQL_PORT: 3306
       DB_MYSQL_USER: "npm"
@@ -29,14 +27,12 @@ services:
     image: yobasystems/alpine-mariadb:latest
     restart: always
     environment:
-      - PUID="1000"
-      - PGID="1000"
       MYSQL_ROOT_PASSWORD: 'npm'
       MYSQL_DATABASE: 'npm'
       MYSQL_USER: 'npm'
       MYSQL_PASSWORD: 'npm'
     volumes:
-      - /BigThiccums/data/mysql:/var/lib/mysql
+      - ./data/mysql:/var/lib/mysql
   gitlab:
     image: 'gitlab/gitlab-ce:latest'
     restart: always
@@ -101,28 +97,3 @@ services:
       - /BigThiccums/Media/PlexDB:/config
       - /BigThiccums/Media/Transcode:/transcode
       - /BigThiccums/Media/Library:/data
-  nextcloud_db:
-    image: mariadb
-    restart: always
-    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
-    volumes:
-      - /BigThiccums/nextcloud_db:/var/lib/mysql
-    environment:
-      - MYSQL_ROOT_PASSWORD=0OUtvhiBbJ@1
-      - MYSQL_PASSWORD=ZWWi8JrY57Na
-      - MYSQL_DATABASE=nextcloud
-      - MYSQL_USER=nextcloud
-  nextcloud_app:
-    image: nextcloud
-    restart: always
-    ports:
-      - 9080:80
-    links:
-      - nextcloud_db
-    volumes:
-      - /BigThiccums/nextcloud:/var/www/html
-    environment:
-      - MYSQL_PASSWORD=ZWWi8JrY57Na
-      - MYSQL_DATABASE=nextcloud
-      - MYSQL_USER=nextcloud
-      - MYSQL_HOST=nextcloud_db
